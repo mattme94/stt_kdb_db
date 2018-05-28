@@ -22,3 +22,24 @@ stats:([ID:`skills$idss] Name:({% for i in range(0, name_long|length) %}`$"{{nam
 
 master:ej[`ID;stats;traits]
 master:ej[`ID;master;main]
+
+// pubsub functions
+.z.ws:{value -9!x}
+subs:2!flip `handle`func`params`curData!"is**"$\:()
+sub:{`subs upsert (.z.w;x;y;res:eval(x;enlist y));(x;res)}
+pub:{neg[x] -8!y}
+pubsub:{pub[.z.w] eval(sub[x];enlist y)}
+.z.pc: {delete from `subs where handle=x}
+
+// Websocket Functions
+loadPage:{pubsub[;`$x]each `getNames}
+filterNames:{pubsub[;`$x]each `getMain}
+
+// get data methods
+getNames:{distinct (master`Name)}
+getData:{
+ w:$[all all null y;();enlist(in;`Name;enlist y)];
+ 0!?[x;w;0b;()]
+ }
+getMain:{getData[`main] x}
+getRarity:{distinct (master`Rarity)}

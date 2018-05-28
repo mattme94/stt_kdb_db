@@ -1,6 +1,5 @@
 // initialise variable
 var ws,names = document.getElementById("selectNames"),
- 	rarity = document.getElementById("tblRarity"),
  	main = document.getElementById("tblMain");
 function connect(){
 	alert("Page is loaded");
