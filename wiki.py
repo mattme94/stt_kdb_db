@@ -10,7 +10,6 @@ import os
 import requests
 import re
 from collections import OrderedDict
-import numpy
 import math
 
 def render(tpl_path, context):
@@ -19,15 +18,12 @@ def render(tpl_path, context):
         loader=jinja2.FileSystemLoader(path or './')
     ).get_template(filename).render(context)
 
-def statsparse(link, dic, name):
+def statsparse(link, dic, name, ID):
     character = requests.get(link)
     ctree = html.fromstring(character.content)
     
     s=ctree.xpath('//span[@id="Away_Team_Skills"]/../following-sibling::p')
-    skills=OrderedDict.fromkeys(s[0].xpath('a/@title')[1:][:-1]).keys()
-    stars=int(ctree.xpath('//table[1]/tr/td[@align]/span/span/text()')[0])
-    
-    
+    skills=OrderedDict.fromkeys(s[0].xpath('a/@title')[1:][:-1]).keys()   
     table=ctree.xpath('//span[@id="Away_Team_Skills"]/../following-sibling::table')
     results=[]
     for rows in table[0].xpath('tr'):
@@ -39,6 +35,7 @@ def statsparse(link, dic, name):
         if not "" in results[i][0]:
             for j in range(1, len(results[i])):     
                 if not "" in results[i][j]:
+                    dic['ID'].append(ID)
                     dic['name'].append(name)
                     dic['levels'].append(results[i][0][0])
                     dic['stars'].append(str(math.ceil((float(j)/float(len(skills))))))
@@ -46,7 +43,6 @@ def statsparse(link, dic, name):
                     dic['minv'].append(results[i][j][0])
                     dic['avg'].append(sum(int(c) for c in results[i][j])/2)
                     dic['maxv'].append(results[i][j][1])
-
     return dic
 
 
@@ -70,7 +66,9 @@ dic['skill']=[]
 dic['minv']=[]
 dic['avg']=[]
 dic['maxv']=[]
+dic['ID']=[]
 
+ID=1
 for i in range(0, len(l)):
     print i
     temp=[]
@@ -91,14 +89,14 @@ for i in range(0, len(l)):
         temp.append(str((re.sub(r'[^\x00-\x7F]+','', x))))
     traits.append(temp)#Traits
     print ("Finding Stats")
-    dic=statsparse(link[i],dic,name[i])
+    dic=statsparse(link[i],dic,name[i],i)
+
     
-c={'name':name,'base':base,'link':link,'rarity':rarity,'skills':skills,'traits':traits, 'name_long':dic['name'],'levels_long':dic['levels'],'stars_long':dic['stars'],'skill_long':dic['skill'],'min_long':dic['minv'],'avg_long': dic['avg'],'max_long':dic['maxv']}
+c={'name':name,'base':base,'link':link,'rarity':rarity,'skills':skills,'traits':traits, 'name_long':dic['name'],'levels_long':dic['levels'],'stars_long':dic['stars'],'skill_long':dic['skill'],'min_long':dic['minv'],'avg_long': dic['avg'],'max_long':dic['maxv'],'ID':dic['ID']}
 
 
-result=render('db', c)
+result=render('db.template', c)
 
 with open("db.q", "wb") as fh:
    fh.write(result)
-
 
