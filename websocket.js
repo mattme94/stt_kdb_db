@@ -1,5 +1,6 @@
 // initialise variable
 var ws,names = document.getElementById("selectNames"),
+	rarity = document.getElementById("selectRarity"),
  	main = document.getElementById("tblMain");
 function connect(){
 	alert("Page is loaded");
@@ -31,6 +32,7 @@ function filterNames() {
 	// call the filterSyms function over the WebSocket
 	ws.send(serialize(['filterNames',t]));
 }
+function getRarity(data) {getValues(data,rarity); }
 function getNames(data) {getValues(data,names); }
 function getValues(data,t) {
 	// parse an array of strings into checkboxes

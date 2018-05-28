@@ -32,7 +32,7 @@ pubsub:{pub[.z.w] eval(sub[x];enlist y)}
 .z.pc: {delete from `subs where handle=x}
 
 // Websocket Functions
-loadPage:{pubsub[;`$x]each `getNames}
+loadPage:{pubsub[;`$x]each `getNames`getRarity}
 filterNames:{pubsub[;`$x]each `getMain}
 
 // get data methods

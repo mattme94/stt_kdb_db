@@ -4,14 +4,19 @@
 	<title>WebSocket PubSub Example</title>
 </head>
 <body onload="connect()">
-	<!-- Create a section to filter on syms -->
+	<!-- Create a section to filter Names based on Rarity -->
+		<section class="select">
+		<h3>Select Rarity: </h3>
+		<div id="selectRarity"></div>
+	</section>
+	<!-- Create a section to filter on Names -->
 	<section class="select">
 		<h3>Select Names: </h3>
 		<div id="selectNames"></div>
 		<button type="submit" onclick="filterNames();">Filter</button>
 	</section>
 	<!-- Set up placeholders to display the trade and quote outputs -->
-	<section id="quotes" class="display">
+	<section id="Tables" class="display">
 		<div>
 			<h3>Main</h3>
 			<table id="tblMain"></table>
