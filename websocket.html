@@ -5,20 +5,28 @@
 </head>
 <body onload="connect()">
 	<!-- Create a section to filter Names based on Rarity -->
-		<section class="select">
-		<h3>Select Rarity: </h3>
-		<div id="selectRarity"></div>
-	</section>
+	<h2>Select Filters: </h2>
+		<div class="row">
+			<div class="column">
+			<h3>Rarity</h3>
+			<div id="selectRarity"></div>
+			</div>
+			<div class="column">
+			<h3>Skills</h3>
+			<div id="selectSkills"></div>
+			</div>
+			<button type="submit" onclick="filtering();">Filter</button>
+		</div>
 	<!-- Create a section to filter on Names -->
 	<section class="select">
-		<h3>Select Names: </h3>
+		<h2>Select Names: </h2>
 		<div id="selectNames"></div>
 		<button type="submit" onclick="filterNames();">Filter</button>
 	</section>
 	<!-- Set up placeholders to display the trade and quote outputs -->
 	<section id="Tables" class="display">
 		<div>
-			<h3>Main</h3>
+			<h2>Main</h2>
 			<table id="tblMain"></table>
 		</div>
 	</section>
@@ -30,6 +38,8 @@
 		table {border-collapse:collapse;text-align:center;width:100%;}
 		td,th {border:1px solid black;padding:5px 20px;width:25%}
 		.split {float:left;width:45%;margin-right:20px;display:table;}
+		.column {float: left;width: 50%;padding: 10px;}
+		.row {content: "";display: table;clear: both;}
 		#selectSyms {padding:10px;min-height:30px;}
 	</style>
 	<script>

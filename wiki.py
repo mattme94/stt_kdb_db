@@ -69,27 +69,34 @@ dic['maxv']=[]
 dic['ID']=[]
 
 ID=1
-for i in range(0, len(l)):
-    print i
-    temp=[]
-    t=l[i].xpath('td[@style="padding:0px;"]/a/@title')[0].replace('"',"'")
-    name.append(t) #Variant Name
-    print (name[i])
-    base.append(l[i].xpath('td[@style="padding:0px; width:10em;"]/a/@title')[0]) #Base CHaracter
-    link.append('https://stt.wiki'+l[i].xpath('td[@style="padding:0px;"]/a/@href')[0])#Link to page
-    rarity.append(l[i].xpath('td[@style="padding:0px; width:10em;"]/following-sibling::td[1]/span/img/@alt')[0])#Rarity
-    for j in range (2, 8):
-        t=l[ i].xpath('td[@style="padding:0px; width:10em;"]/following-sibling::td['+str(j)+']/a/@title')
-        if len(t)>0:
-            temp.append(str(t[0]))
-    skills.append(temp)
-    temp=[]
-    t=l[i].xpath('following-sibling::tr[@class="expand-child"][1]/td[@colspan]/a/text()')
-    for x in t:
-        temp.append(str((re.sub(r'[^\x00-\x7F]+','', x))))
-    traits.append(temp)#Traits
-    print ("Finding Stats")
-    dic=statsparse(link[i],dic,name[i],i)
+i=0
+for x in range(0, len(l)):
+    print x
+    test='https://stt.wiki'+l[x].xpath('td[@style="padding:0px;"]/a/@href')[0]
+    t=l[x].xpath('td[@style="padding:0px; width:10em;"]/p/a/@title')[0].replace('"',"'")
+    print(t)
+    if 'index' in test:
+        print ('No valid link, will skip this character')
+        continue
+    else:
+        temp=[]
+        name.append(t) #Variant Name
+        base.append(l[x].xpath('td[@style="padding:0px; width:10em;"]/a/@title')[0]) #Base CHaracter
+        link.append('https://stt.wiki'+l[x].xpath('td[@style="padding:0px;"]/a/@href')[0])#Link to page
+        rarity.append(l[x].xpath('td[@style="padding:0px; width:10em;"]/following-sibling::td[1]/span/img/@alt')[0])#Rarity
+        for j in range (2, 8):
+            t=l[x].xpath('td[@style="padding:0px; width:10em;"]/following-sibling::td['+str(j)+']/a/@title')
+            if len(t)>0:
+                temp.append(str(t[0]))
+        skills.append(temp)
+        temp=[]
+        t=l[x].xpath('following-sibling::tr[@class="expand-child"][1]/td[@colspan]/a/text()')
+        for x in t:
+            temp.append(str((re.sub(r'[^\x00-\x7F]+','', x))))
+        traits.append(temp)#Traits
+        print ("Finding Stats")
+        dic=statsparse(link[i],dic,name[i],i)
+        i=i+1
 
     
 c={'name':name,'base':base,'link':link,'rarity':rarity,'skills':skills,'traits':traits, 'name_long':dic['name'],'levels_long':dic['levels'],'stars_long':dic['stars'],'skill_long':dic['skill'],'min_long':dic['minv'],'avg_long': dic['avg'],'max_long':dic['maxv'],'ID':dic['ID']}

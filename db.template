@@ -12,34 +12,38 @@ ids:({% for i in range(0, name|length) %}{% for j in range(0, skills[i]|length)%
 
 enum1:`traits$idt
 
-skills:([ID:`traits$ids]; Name:({% for i in range(0, name|length) %}{% for j in range(0, skills[i]|length)%}`$("{{name[i]}}"){% if j < (skills[i]|length)-1 %};{% endif %}{% endfor %}{% if i < (name|length)-1 %};{% endif %}{% endfor %}); Skills:({% for i in range(0,skills|length) %}{% for j in range(0, skills[i]|length)%}`$("{{skills[i][j]}}"){% if j < (skills[i]|length)-1 %};{% endif %}{% endfor %}{% if i < (skills|length)-1 %};{% endif %}{% endfor %}))
+//Name:({% for i in range(0, name|length) %}{% for j in range(0, skills[i]|length)%}`$"{{name[i]}}"{% if j < (skills[i]|length)-1 %};{% endif %}{% endfor %}{% if i < (name|length)-1 %};{% endif %}{% endfor %}); 
+//Skills:({% for i in range(0,skills|length) %}{% for j in range(0, skills[i]|length)%}`$"{{skills[i][j]}}"{% if j < (skills[i]|length)-1 %};{% endif %}{% endfor %}{% if i < (skills|length)-1 %};{% endif %}{% endfor %});
 
-idss:({% for i in range(0, stats_id|length) %}{{stats_id[i]}}{% if i < (stats_id|length)-1 %};{% endif %}{% endfor %})
+//skills:([ID:`traits$ids]; Name:Name[0]; Skills:Skills[0])
 
-enum2:`skills$ids
+//idss:({% for i in range(0, stats_id|length) %}{{stats_id[i]}}{% if i < (stats_id|length)-1 %};{% endif %}{% endfor %})
+
+//enum2:`skills$ids
 
 stats:([] ID:({% for i in range(0, ID|length) %}{{ID[i]}}{% if i < (ID|length)-1 %};{% endif %}{% endfor %}); Name:({% for i in range(0, name_long|length) %}`$"{{name_long[i]}}"{% if i < (name_long|length)-1 %};{% endif %}{% endfor %}); Levels:({% for i in range(0, levels_long|length) %}{{levels_long[i]}}{% if i < (levels_long|length)-1 %};{% endif %}{% endfor %});Stars:({% for i in range(0, stars_long|length) %}{{stars_long[i]}}{% if i < (stars_long|length)-1 %};{% endif %}{% endfor %}); Skill:({% for i in range(0, skill_long|length) %}`$"{{skill_long[i]}}"{% if i < (skill_long|length)-1 %};{% endif %}{% endfor %}); Min:({% for i in range(0, min_long|length) %}{{min_long[i]}}{% if i < (min_long|length)-1 %};{% endif %}{% endfor %}); Avg:({% for i in range(0, avg_long|length) %}{{avg_long[i]}}{% if i < (avg_long|length)-1 %};{% endif %}{% endfor %}); Max:({% for i in range(0, max_long|length) %}{{max_long[i]}}{% if i < (max_long|length)-1 %};{% endif %}{% endfor %}))
 
 master:ej[`ID;stats;traits]
 master:ej[`ID;master;main]
 
-// pubsub functions
+// pub functions
 .z.ws:{value -9!x}
-subs:2!flip `handle`func`params`curData!"is**"$\:()
-sub:{`subs upsert (.z.w;x;y;res:eval(x;enlist y));(x;res)}
-pub:{neg[x] -8!y}
-pubsub:{pub[.z.w] eval(sub[x];enlist y)}
+pub:{neg[.z.w] -8!(x;y); 0N! .z.w; 0N!x}
 .z.pc: {delete from `subs where handle=x}
 
 // Websocket Functions
-loadPage:{pubsub[;`$x]each `getNames`getRarity}
-filterNames:{pubsub[;`$x]each `getMain}
+loadPage:{pub [`getNames;getNames["";""]]; pub [`getSkills;getSkills[]]; pub [`getRarity;getRarity[]]}
+trimNames:{pub [`getNames;getNames[x;y]]}
 
 // get data methods
-getNames:{distinct (master`Name)}
 getData:{
- w:$[all all null y;();enlist(in;`Name;enlist y)];
- 0!?[x;w;0b;()]
- }
+	w:$[all all null y;();enlist(in;`Name;enlist y)];
+	0!?[x;w;0b;()]}
 getMain:{getData[`main] x}
 getRarity:{distinct (master`Rarity)}
+getSkills:{distinct (master`Skill)}
+getNames:{[rarity;skill] w:$[all all null `$rarity;();enlist(in;`Rarity;enlist `$rarity)];
+	NameRarity:distinct ?[`master;w;();`Name];
+	w:$[all all null `$skill;();enlist(in;`Skill;enlist `$skill)];
+	NameSkill:distinct ?[`master;w;();`Name];
+	NameSkill[where NameSkill in NameRarity]}

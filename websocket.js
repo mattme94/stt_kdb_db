@@ -1,6 +1,7 @@
 // initialise variable
 var ws,names = document.getElementById("selectNames"),
 	rarity = document.getElementById("selectRarity"),
+	skills = document.getElementById("selectSkills"),
  	main = document.getElementById("tblMain");
 function connect(){
 	alert("Page is loaded");
@@ -16,6 +17,7 @@ function connect(){
 		ws.onmessage=function(e){
  			// deserialise incoming messages
  			var d = deserialize(e.data);
+ 			console.log(d);
 			// messages should have format [‘function’,params]
  			// call the function name with the parameters
  			window[d.shift()](d[0]);
@@ -32,6 +34,21 @@ function filterNames() {
 	// call the filterSyms function over the WebSocket
 	ws.send(serialize(['filterNames',t]));
 }
+function filtering() {
+	// get the values of checkboxes that are ticked and convert into an array of strings
+	var t = [], s = rarity.children;
+	for (var i = 0; i < s.length ; i++) {
+		if (s[i].checked) { t.push(s[i].value); };
+ 	};
+ 	var u = [], v = skills.children;
+	for (var i = 0; i < v.length ; i++) {
+		if (v[i].checked) { u.push(v[i].value); };
+ 	};
+	// call the filterSyms function over the WebSocket
+	ws.send(serialize(['trimNames',t,u]));
+}
+
+function getSkills(data) {getValues(data,skills); }
 function getRarity(data) {getValues(data,rarity); }
 function getNames(data) {getValues(data,names); }
 function getValues(data,t) {
