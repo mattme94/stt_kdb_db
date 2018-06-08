@@ -28,12 +28,12 @@ master:ej[`ID;master;main]
 
 // pub functions
 .z.ws:{value -9!x}
-pub:{neg[.z.w] -8!(x;y); 0N! .z.w; 0N!x}
+pub:{neg[.z.w] -8! (x;eval(x,y)); 0N! (x;eval(x,y))}
 .z.pc: {delete from `subs where handle=x}
 
 // Websocket Functions
-loadPage:{pub [`getNames;getNames["";""]]; pub [`getSkills;getSkills[]]; pub [`getRarity;getRarity[]]}
-trimNames:{pub [`getNames;getNames[x;y]]}
+loadPage:{pub '[`getNames`getSkills`getRarity;(("";"");("";);("";))]}
+trimNames:{pub [`getNames;(x;y)]}
 
 // get data methods
 getData:{
