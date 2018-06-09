@@ -32,7 +32,7 @@ function filterNames() {
 		if (s[i].checked) { t.push(s[i].value); };
  	};
 	// call the filterSyms function over the WebSocket
-	ws.send(serialize(['filterNames',t]));
+	ws.send(serialize(['getMain',t]));
 }
 function filtering() {
 	// get the values of checkboxes that are ticked and convert into an array of strings
@@ -70,9 +70,13 @@ t += '<th>' + x + '</th>';
  for (var i = 0; i < data.length; i++) {
 t += '<tr>';
 for (var x in data[0]) {
- t += '<td>' + (("time" === x) ?
-data[i][x].toLocaleTimeString().slice(0,-3) : ("number" == typeof
-data[i][x]) ? data[i][x].toFixed(2) : data[i][x]) + '</td>';
+	if (Array.isArray(data[i][x])){ //Checks if the data is an array, and if it is, join the array on a comma with a space
+		t += '<td>' + data[i][x].join(', ') + ' </td>';
+	}	
+	else {
+	 	t += '<td>' + (("number" == typeof
+		data[i][x]) ? data[i][x].toFixed(2) : data[i][x]) + ' </td>'; 
+ 	}
 }
 t += '</tr>';
  }
