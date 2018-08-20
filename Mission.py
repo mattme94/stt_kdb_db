@@ -78,9 +78,9 @@ for index,episode in enumerate(mission_number):
 
 c={'missionName':missionName,'missionRarity':missionRarity,'missionType':missionType,'missionCost':missionCost,'missionLocationFull':missionLocationFull,'missionLocationShort':missionLocationShort,'missionId':missionId}
 
-result=render('mission.template', c)
+result=render('Mission.template', c)
 
-with open("mission.q", "wb") as fh:
+with open("Mission.q", "wb") as fh:
    fh.write(result)
 
 

@@ -9,6 +9,12 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas
 
+def render(tpl_path, context):
+    path, filename = os.path.split(tpl_path)
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(path or './')
+    ).get_template(filename).render(context)
+
 # share spreadsheet with stt-958@lateral-name-194904.iam.gserviceaccount.com
  
  
@@ -23,6 +29,8 @@ sheets=[x.title for x in spreadsheet.worksheets()]
 items={}
 dfs={}
 rarity_list=['Basic','Common','Uncommon','Rare','Super Rare']
+level_defs={'1':'Normal','2':'Elite','3':'Epic'}
+
 
 
 for i in range (1, len(sheets)):
@@ -49,7 +57,6 @@ for i in range (1, len(sheets)):
             rarity=rarity[-1]
             gear=gear.split(rarity)[-1].strip()
         if gear == "Summary!A1":
-                print(sheets[i])
                 ws.update_acell('A1',ws.acell('A1').input_value.replace('"Summary!A1"','"Index"'))
         if rarity!="":
             if not gear in items:
@@ -84,4 +91,52 @@ def excelread(sheetname):
             if not x in items:
                 items[x]=pandas.DataFrame()
             items[x]=items[x].append({'Mission':sheets[i],'Count':sum(df[item_listraw[j]].fillna(0)),'Warp':warp_count, 'Ratio':sum(df[item_listraw[j]].fillna(0))/warp_count}, ignore_index=True)
+ 
     
+itemName=[]
+itemRarity=[]
+missionName_item=[]
+missionLevel_item=[]
+runsDone=[]  
+itemReturn=[]  
+itemPerRun=[]
+itemId=[]
+Id=1
+for gear in items:
+    if type(items[gear])==dict:
+        for rarity in items[gear]:
+            for row in range(0,len(items[gear][rarity])):
+                itemId.append(Id)
+                itemName.append(gear)
+                itemRarity.append(rarity)
+                runsDone.append(items[gear][rarity].loc[row,'Warp'])
+                itemReturn.append(items[gear][rarity].loc[row,'Count'])
+                if items[gear][rarity].loc[row,'Warp']==0:               
+                    itemPerRun.append(0)
+                else:
+                    itemPerRun.append(items[gear][rarity].loc[row,'Count']/items[gear][rarity].loc[row,'Warp'])
+                missionName_item.append(items[gear][rarity].loc[row,'Mission'].rsplit('-',1)[0].strip())
+                missionLevel_item.append(level_defs[items[gear][rarity].loc[row,'Mission'].rsplit('-',1)[1].strip()])
+            Id+=1
+    else:
+        for row in range(0,len(items[gear])):
+            itemId.append(Id)
+            itemName.append(gear)
+            itemRarity.append('')
+            runsDone.append(items[gear].loc[row,'Warp'])
+            itemReturn.append(items[gear].loc[row,'Count'])
+            if items[gear].loc[row,'Warp']==0:
+                itemPerRun.append(0)
+            else:
+                itemPerRun.append(items[gear].loc[row,'Count']/items[gear].loc[row,'Warp'])
+            missionName_item.append(items[gear].loc[row,'Mission'].rsplit('-',1)[0].strip())
+            missionLevel_item.append(level_defs[items[gear].loc[row,'Mission'].rsplit('-',1)[1].strip()])
+        Id+=1
+        
+
+c={'itemId':itemId,'itemName':itemName,'itemRarity':itemRarity,'runsDone':runsDone,'itemReturn':itemReturn,'itemPerRun':itemPerRun,'missionName':missionName_item,'missionLevel':missionLevel_item}
+
+result=render('ItemList.template', c)
+
+with open("ItemList.q", "wb") as fh:
+   fh.write(result)    

@@ -25,3 +25,11 @@ stats:([] ID:(0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;
 
 master:ej[`ID;stats;traits]
 master:ej[`ID;master;main]
+
+\l ItemList.q
+\l Mission.q
+
+a:{first exec missionId from Mission where missionName=x`missionName, missionRarity=x`missionLevel} each ItemList;
+update missionId:a from `ItemList;
+update missionLink:`Mission!Mission[`missionId]?a from `ItemList;
+update costPerItem:missionLink.missionCost%itemPerRun from `ItemList;
